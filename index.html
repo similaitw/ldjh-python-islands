@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="給國中資優班自學的 Python 程式島：扮演冒險家搭船登島，在瀏覽器裡直接寫 Python、執行、自動批改，不用安裝也不用登入。">
+<meta name="description" content="給所有想自學 Python 的人的程式島：扮演冒險家搭船登島，在瀏覽器裡直接寫 Python、執行、自動批改，不用安裝也不用登入。">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Python 程式島</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -693,9 +693,9 @@ pre.console .done{color:var(--term-ok)}
 <div class="wrap">
 <header>
   <div>
-    <div class="eyebrow">國中資優班 · Python 自學航線</div>
+    <div class="eyebrow">Python 自學航線</div>
     <h1 class="sr-only" id="pageTitle">Python <span>程式島</span></h1>
-    <p>扮演一位冒險家，在三片群島、共 20 座島之間旅行（基礎群島 8 座、結構群島 8 座、應用群島 4 座）：點一座島，就會搭帆船、水上飛機或熱氣球過去；上岸後走到地標調查，答對練習打開寶箱，一路升級。每一站先讀觀念、避開陷阱，再把範例程式放進右邊的工作台親手執行、改改看；接著完成會自動批改的程式任務，最後用練習題和資優挑戰確認自己真的懂了。Python 直接在瀏覽器裡執行，不用安裝、不用登入。</p>
+    <p>扮演一位冒險家，在三片群島、共 20 座島之間旅行（基礎群島 8 座、結構群島 8 座、應用群島 4 座）：點一座島，就會搭帆船、水上飛機或熱氣球過去；上岸後走到地標調查，答對練習打開寶箱，一路升級。每一站先讀觀念、避開陷阱，再把範例程式放進右邊的工作台親手執行、改改看；接著完成會自動批改的程式任務，最後用練習題和進階挑戰確認自己真的懂了。Python 直接在瀏覽器裡執行，不用安裝、不用登入。</p>
   </div>
   <div class="progress" id="progress" aria-live="polite">
     <div>已登島 <strong id="doneCount">0</strong> / <span id="isleTotal">20</span><div class="bar"><i id="doneBar"></i></div></div>
@@ -775,7 +775,7 @@ pre.console .done{color:var(--term-ok)}
         <button class="tab" role="tab" data-tab="code" aria-selected="false"><i class="sn">2</i><span class="sl">範例<span class="sl2">程式</span></span><small id="stCodeS">動手跑</small></button>
         <button class="tab" role="tab" data-tab="tasks" aria-selected="false"><i class="sn">3</i><span class="sl">任務</span><small id="stTaskS">0/3</small></button>
         <button class="tab" role="tab" data-tab="practice" aria-selected="false"><i class="sn">4</i><span class="sl">練習</span><small id="tabPrac">0/3</small></button>
-        <button class="tab" role="tab" data-tab="chal" aria-selected="false"><i class="sn">5</i><span class="sl">資優挑戰</span><small id="stChalS">2 題</small></button>
+        <button class="tab" role="tab" data-tab="chal" aria-selected="false"><i class="sn">5</i><span class="sl">進階挑戰</span><small id="stChalS">2 題</small></button>
       </div>
       <div class="panel" role="tabpanel" data-panel="concept">
         <div class="concept" id="stConcept"></div>
@@ -1488,7 +1488,7 @@ function show(i){const changed=cur!==i;cur=i;const st=S[i];if(changed||st.soon)c
   $id('stChal').innerHTML=st.chal.map(([q,a],j)=>`<details class="chal"><summary>${j?'挑戰 2　探究':'挑戰 1'}</summary><p class="q">${q}</p><details class="a"><summary>看提示與解答</summary><p>${a}</p></details></details>`).join('');
   $id('prevBtn').disabled=i===0;$id('nextBtn').disabled=i===S.length-1;
   updateDoneBtn();setTab(curTab);paintProgress()}
-const STEP_ORDER=['concept','code','tasks','practice','chal'],STEP_NAME={concept:'觀念',code:'範例程式',tasks:'任務',practice:'練習',chal:'資優挑戰'};
+const STEP_ORDER=['concept','code','tasks','practice','chal'],STEP_NAME={concept:'觀念',code:'範例程式',tasks:'任務',practice:'練習',chal:'進階挑戰'};
 let stepSeen=store.get('pyIsland1.steps',{});
 function stepDone(id,k){const st=S.find(x=>x.id===id),seen=stepSeen[id]||{};
   if(k==='tasks'){const td=tasksDone[id]||[];return st.tasks.length>0&&st.tasks.every((_,j)=>td[j])}
