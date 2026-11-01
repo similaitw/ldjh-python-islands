@@ -698,6 +698,31 @@ pre.console .done{color:var(--term-ok)}
 .tpv-c{min-width:0}
 .tpv-c .gfx-cv{border-radius:6px}
 
+/* ===== 綜合練習場 ===== */
+.arena{margin-top:40px}
+.ar-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:15px}
+.ar-top .bar{flex:1;height:8px;border-radius:99px;background:var(--chip);overflow:hidden}
+.ar-top .bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+.ar-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.ar-chips button{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:4px 12px;font-size:14px;cursor:pointer}
+.ar-chips button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.ar-chips small{opacity:.75;margin-left:4px;font-family:var(--f-num)}
+.ar-cur{border:2px solid var(--hi);border-radius:14px;padding:14px 16px;margin-bottom:16px;background:color-mix(in srgb,var(--hi) 8%,var(--paper));display:grid;gap:8px}
+.ar-cur h3{margin:0;font-size:19px;font-family:var(--f-display)}
+.ar-cur p{margin:0}
+.ar-cur code{font-family:var(--f-mono);background:var(--chip);padding:1px 5px;border-radius:5px}
+.ar-ex{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ar-ex small{color:var(--muted);display:block}
+.ar-ex pre{margin:0;font-family:var(--f-mono);font-size:13px;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:6px 10px;white-space:pre-wrap;max-height:180px;overflow:auto}
+.ar-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.ar-hint{border-left:4px solid var(--hi);padding:6px 10px;background:var(--paper);border-radius:6px;font-size:14px}
+.ar-isle{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:2px 10px;font-size:13px;cursor:pointer}
+.ar-isle:hover{border-color:var(--accent)}
+.ar-list .tk{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 10px;padding:10px 12px}
+.ar-list .tk b{font-family:var(--f-display);font-size:16px}
+.ar-list .tk small{grid-column:1}
+.ar-list .tk .put{grid-row:1/span 2;grid-column:2}
+@media (max-width:560px){.ar-ex{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -726,6 +751,7 @@ pre.console .done{color:var(--term-ok)}
       <button class="ib" type="button" data-go="routeTbl" title="航線總覽" aria-label="航線總覽"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></button>
       <button class="ib" type="button" data-go="progress" title="學習進度" aria-label="學習進度"><svg viewBox="0 0 24 24"><path d="M5 20V12M10 20V6M15 20v-9M20 20V9"/></svg></button>
       <button class="ib" type="button" data-go="practice" title="未完成的練習" aria-label="前往這一站的練習"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span class="bdg" id="mhLeft">6</span></button>
+      <button class="ib" type="button" id="mhArena" title="綜合練習場" aria-label="前往綜合練習場"><svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></svg></button>
       <button class="ib" type="button" data-go="guide" title="使用說明" aria-label="使用說明"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7M12 17h.01"/></svg></button>
     </div>
   </div>
@@ -837,6 +863,40 @@ pre.console .done{color:var(--term-ok)}
   </div>
 </section>
 
+<section class="station arena" id="arena" aria-labelledby="arTitle">
+  <div class="st-head">
+    <span class="st-no">跨島複習 · 18 題</span>
+    <h2 id="arTitle">綜合練習場</h2>
+    <span class="topic">把各島學到的 print、if、迴圈、串列、字串混在一起練</span>
+    <p class="st-mark"><b>怎麼玩</b>挑一題按「開始」，題目會帶進右邊的練習台。先按「執行」自己試，再按「提交批改」；每題最後一組是隱藏測資。卡住了可以看提示，或按島名回去複習。</p>
+  </div>
+  <div class="cols">
+    <div class="text-col">
+      <div class="ar-top"><b>已通過 <span id="arDone">0</span> / <span id="arTotal">18</span></b><div class="bar"><i id="arBar"></i></div></div>
+      <div class="ar-chips" id="arChips" role="tablist" aria-label="題目分類"></div>
+      <div class="ar-cur" id="arCur" hidden></div>
+      <div class="tks ar-list" id="arList"></div>
+    </div>
+    <div class="board-col">
+      <div class="wb" id="arWb">
+        <div class="wb-head"><b>練習台</b><span class="py-stat" id="arStat"><i></i><span>Python 準備中…</span></span>
+          <button class="copy" type="button" id="arReset">重設</button><button class="copy" type="button" id="arCopy">複製程式</button></div>
+        <div class="wb-task" id="arTask" hidden><span id="arTaskName"></span><button class="chk-btn" type="button" id="arSubmit">提交批改</button></div>
+        <div class="ed-host"><textarea id="arEd" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="綜合練習場的 Python 程式編輯區"></textarea></div>
+        <details class="stdin" id="arStdinBox"><summary>輸入資料<span>input() 會從這裡一行一行讀</span></summary><textarea id="arStdin" rows="3" spellcheck="false" aria-label="輸入資料，一行一筆"></textarea></details>
+        <div class="wb-bar">
+          <button class="run-btn" type="button" id="arRun"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>執行</button>
+          <button class="btn sm" type="button" id="arStop" disabled>停止</button>
+          <span class="kb-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> 也能執行</span>
+        </div>
+        <pre class="console" id="arOut" aria-live="polite" aria-label="執行結果"><span class="sys">先從左邊挑一題，按「開始」。</span></pre>
+        <div class="py-hint" id="arHint" hidden></div>
+        <div class="grade" id="arGrade" hidden></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="guide" id="guide">
   <div class="card">
     <h2>出航前：工作台基本操作</h2>
@@ -850,6 +910,7 @@ pre.console .done{color:var(--term-ok)}
       <li>程式跑超過 5 秒會自動停下來（通常是迴圈停不下來），也可以隨時按「停止」。</li>
       <li>出錯時別緊張：看錯誤在第幾行，下面會有中文提示告訴你可能哪裡寫錯。</li>
       <li>每座島的程式會自動存在這台電腦，下次回來還在。</li>
+      <li>逛完幾座島之後，可以到頁面下方的「綜合練習場」做 18 題跨島複習題，一樣會自動批改。</li>
     </ul>
   </div>
   <div class="card">
@@ -1813,7 +1874,162 @@ window.addEventListener('hashchange',route);
 (()=>{const d=new Date(),wd='日一二三四五六'[d.getDay()];$id('dkDate').textContent=`今天 ${d.getMonth()+1}/${d.getDate()}（${wd}）`})();
 document.querySelectorAll('.mh-tools [data-go]').forEach(b=>b.addEventListener('click',()=>{const g=b.dataset.go;
   if(g==='practice'){const i=S.findIndex(s=>s.prac.length&&pracCount(s.id)<s.prac.length);if(i>=0&&i!==cur)goStation(i);setTab('practice');scrollStation();return}$id(g).scrollIntoView({behavior:'smooth',block:'center'})}));
+$id('mhArena').addEventListener('click',()=>$id('arena').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}));
 $id('dkBig').addEventListener('click',e=>{const on=document.body.classList.toggle('big');e.currentTarget.setAttribute('aria-pressed',on);requestAnimationFrame(()=>ed.refresh())});
+/* ================= 綜合練習場（跨島複習，共用同一個 Python Worker） ================= */
+const ARENA=[
+ {id:'hello',g:'輸出與輸入',isle:'輸出港',t:'你好，世界',
+  q:'用 <code>print()</code> 印出這一行字：<code>你好，世界！</code>',
+  starter:'# 用 print 印出：你好，世界！\n',hint:'print("你好，世界！") —— 注意題目用的是全形的逗號和驚嘆號，要放在引號裡面。',
+  cases:[{in:'',out:'你好，世界！'}]},
+ {id:'greet',g:'輸出與輸入',isle:'變數灣',t:'打招呼',
+  q:'用 <code>input()</code> 讀入一個名字，然後印出 <code>你好，名字！</code>',
+  starter:'name = input()\n# 接下來印出：你好，name！\n',hint:'可以用 + 把字串接起來，或用 f-string：print(f"你好，{name}！")',
+  cases:[{in:'小明',out:'你好，小明！'},{in:'Amy',out:'你好，Amy！'},{in:'陳大文',out:'你好，陳大文！'}]},
+ {id:'add',g:'輸出與輸入',isle:'變數灣',t:'兩數相加',
+  q:'輸入兩個整數（各一行），印出它們的和。',
+  starter:'a = input()\nb = input()\n# 小心！input() 讀進來的是「字串」\nprint(a + b)\n',hint:'input() 得到的是字串，"3" + "5" 會變成 "35"。用 int() 轉成整數再相加。',
+  cases:[{in:'3\n5',out:'8'},{in:'100\n-30',out:'70'},{in:'0\n0',out:'0'}]},
+ {id:'rect',g:'輸出與輸入',isle:'運算礁',t:'長方形面積與周長',
+  q:'輸入長和寬（整數，各一行），第一行印出面積，第二行印出周長。',
+  starter:'w = int(input())\nh = int(input())\n',hint:'面積 = 長 × 寬；周長 = (長 + 寬) × 2。Python 的乘號是 *。',
+  cases:[{in:'4\n6',out:'24\n20'},{in:'1\n1',out:'1\n4'},{in:'10\n3',out:'30\n26'}]},
+ {id:'oddeven',g:'條件判斷',isle:'判斷岬',t:'奇數還是偶數',
+  q:'輸入一個整數，如果是偶數印出 <code>偶數</code>，否則印出 <code>奇數</code>。',
+  starter:'n = int(input())\n',hint:'n % 2 是 n 除以 2 的餘數。餘數是 0 就是偶數。',
+  cases:[{in:'7',out:'奇數'},{in:'10',out:'偶數'},{in:'0',out:'偶數'},{in:'-3',out:'奇數'}]},
+ {id:'grade',g:'條件判斷',isle:'判斷岬',t:'成績等第',
+  q:'輸入分數（0～100 的整數），依照下表印出等第：90 以上 <code>優</code>、80～89 <code>甲</code>、70～79 <code>乙</code>、60～69 <code>丙</code>、59 以下 <code>丁</code>。',
+  starter:'score = int(input())\n',hint:'用 if / elif / else，從最高分開始往下判斷：if score >= 90: …',
+  cases:[{in:'85',out:'甲'},{in:'95',out:'優'},{in:'90',out:'優'},{in:'70',out:'乙'},{in:'60',out:'丙'},{in:'0',out:'丁'},{in:'59',out:'丁'}]},
+ {id:'leap',g:'條件判斷',isle:'邏輯峽',t:'閏年判斷',
+  q:'輸入西元年份，是閏年印出 <code>閏年</code>，否則印出 <code>平年</code>。規則：能被 4 整除但不能被 100 整除，或能被 400 整除。',
+  starter:'year = int(input())\n',hint:'可以把條件寫成：(year % 4 == 0 and year % 100 != 0) or year % 400 == 0',
+  cases:[{in:'2024',out:'閏年'},{in:'2023',out:'平年'},{in:'2000',out:'閏年'},{in:'1900',out:'平年'}]},
+ {id:'fizz',g:'條件判斷',isle:'判斷岬',t:'FizzBuzz',
+  q:'輸入 n，從 1 印到 n（每個一行）。但是：3 的倍數印 <code>Fizz</code>，5 的倍數印 <code>Buzz</code>，同時是 3 和 5 的倍數印 <code>FizzBuzz</code>。',
+  starter:'n = int(input())\n',hint:'先判斷 15 的倍數（i % 15 == 0），再判斷 3、5，順序很重要！',
+  cases:[{in:'15',out:'1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz'},{in:'5',out:'1\n2\nFizz\n4\nBuzz'},{in:'31',out:'1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n16\n17\nFizz\n19\nBuzz\nFizz\n22\n23\nFizz\nBuzz\n26\nFizz\n28\n29\nFizzBuzz\n31'}]},
+ {id:'sum',g:'迴圈',isle:'迴圈瀑布',t:'1 加到 n',
+  q:'輸入正整數 n，印出 1 + 2 + … + n 的總和。',
+  starter:'n = int(input())\ntotal = 0\n# 用 for 迴圈把 1 到 n 加起來\n\nprint(total)\n',hint:'for i in range(1, n + 1): total = total + i（range 不包含結尾，所以要寫 n + 1）',
+  cases:[{in:'10',out:'55'},{in:'1',out:'1'},{in:'100',out:'5050'}]},
+ {id:'times',g:'迴圈',isle:'迴圈瀑布',t:'九九乘法表的一列',
+  q:'輸入一個數字 n，印出 n×1 到 n×9，格式是 <code>3 x 1 = 3</code>（數字和符號之間有空格）。',
+  starter:'n = int(input())\n',hint:'for i in range(1, 10): print(n, "x", i, "=", n * i) —— print 用逗號分隔時會自動加空格。',
+  cases:[{in:'3',out:'3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15\n3 x 6 = 18\n3 x 7 = 21\n3 x 8 = 24\n3 x 9 = 27'},
+         {in:'7',out:'7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\n7 x 6 = 42\n7 x 7 = 49\n7 x 8 = 56\n7 x 9 = 63'}]},
+ {id:'stars',g:'迴圈',isle:'迴圈瀑布',t:'星星三角形',
+  q:'輸入 n，印出 n 行的直角三角形，第 i 行有 i 顆 <code>*</code>。',
+  starter:'n = int(input())\n',hint:'字串可以乘法："*" * 3 會得到 "***"。',
+  cases:[{in:'4',out:'*\n**\n***\n****'},{in:'1',out:'*'},{in:'6',out:'*\n**\n***\n****\n*****\n******'}]},
+ {id:'count',g:'迴圈',isle:'漩渦島',t:'倒數計時',
+  q:'輸入正整數 n，從 n 倒數到 1（每個數字一行），最後印出 <code>發射！</code>',
+  starter:'n = int(input())\n',hint:'可以用 while n > 0: … n = n - 1，也可以用 range(n, 0, -1)。',
+  cases:[{in:'5',out:'5\n4\n3\n2\n1\n發射！'},{in:'1',out:'1\n發射！'},{in:'3',out:'3\n2\n1\n發射！'}]},
+ {id:'fib',g:'迴圈',isle:'迴圈瀑布',t:'費氏數列',
+  q:'輸入 n，印出費氏數列的前 n 項，用一個空白分隔。數列從 <code>1 1 2 3 5 8 …</code> 開始，每一項是前兩項的和。',
+  starter:'n = int(input())\n',hint:'用 a, b = 1, 1 開始，每次 a, b = b, a + b。把每一項放進串列，最後用 " ".join(...) 印出（數字要先轉成字串）。',
+  cases:[{in:'8',out:'1 1 2 3 5 8 13 21'},{in:'1',out:'1'},{in:'2',out:'1 1'},{in:'12',out:'1 1 2 3 5 8 13 21 34 55 89 144'}]},
+ {id:'max',g:'串列與字串',isle:'串列市集',t:'找最大值',
+  q:'輸入一行用空白分隔的整數，印出其中最大的數。挑戰：試試看<b>不要用</b> <code>max()</code>，自己用迴圈找！',
+  starter:'nums = list(map(int, input().split()))\n# nums 現在是整數串列，例如 [3, 9, 2]\n',hint:'先假設 biggest = nums[0]，再用 for 一個一個比，遇到更大的就換掉。',
+  cases:[{in:'3 9 2 7',out:'9'},{in:'-5 -2 -9',out:'-2'},{in:'42',out:'42'}]},
+ {id:'avg',g:'串列與字串',isle:'串列市集',t:'平均分數',
+  q:'輸入一行用空白分隔的分數，印出平均，<b>四捨五入到小數點後 2 位</b>（固定顯示 2 位）。',
+  starter:'scores = list(map(int, input().split()))\n',hint:'平均 = sum(scores) / len(scores)。固定 2 位小數可以用 f"{avg:.2f}"。',
+  cases:[{in:'80 90 75',out:'81.67'},{in:'100 100',out:'100.00'},{in:'60 61',out:'60.50'}]},
+ {id:'palin',g:'串列與字串',isle:'字串工坊',t:'回文判斷',
+  q:'輸入一個字串，如果正著念和倒著念一樣（例如 <code>上海自來水來自海上</code>），印出 <code>是回文</code>，否則印出 <code>不是回文</code>。',
+  starter:'s = input()\n',hint:'s[::-1] 可以把字串反轉。',
+  cases:[{in:'level',out:'是回文'},{in:'上海自來水來自海上',out:'是回文'},{in:'python',out:'不是回文'},{in:'a',out:'是回文'}]},
+ {id:'vowel',g:'串列與字串',isle:'字串工坊',t:'數母音',
+  q:'輸入一個英文句子，印出裡面母音（a、e、i、o、u，大小寫都算）的數量。',
+  starter:'text = input()\n',hint:'先用 text.lower() 轉成小寫，再用 for 檢查每個字母是不是 in "aeiou"。',
+  cases:[{in:'Hello World',out:'3'},{in:'AEIOU aeiou',out:'10'},{in:'rhythm',out:'0'}]},
+ {id:'prime',g:'串列與字串',isle:'數學實驗室',t:'質數判斷',
+  q:'輸入一個正整數 n（n ≥ 1），是質數印出 <code>是質數</code>，否則印出 <code>不是質數</code>。提醒：1 不是質數。',
+  starter:'n = int(input())\n',hint:'從 2 試到 n-1（更快：試到 √n），只要有一個能整除就不是質數。記得先處理 n = 1。',
+  cases:[{in:'17',out:'是質數'},{in:'1',out:'不是質數'},{in:'2',out:'是質數'},{in:'21',out:'不是質數'},{in:'97',out:'是質數'}]},
+];
+(()=>{const box=$id('arena');if(!box)return;
+  const AR_KEY='pyIsland1.arena',AR_CODE='pyIsland1.arenaCode';
+  const arDone=store.get(AR_KEY,{}),arCodes=store.get(AR_CODE,{});
+  const groups=[...new Set(ARENA.map(p=>p.g))];
+  let filt='全部',curP=null,arSaveT=0;
+  const outEl=$id('arOut'),stdinA=$id('arStdin');
+  const ed2=(()=>{const ta=$id('arEd');
+    if(window.CodeMirror){const cm=CodeMirror.fromTextArea(ta,{mode:'python',theme:'isle',lineNumbers:true,indentUnit:4,tabSize:4,indentWithTabs:false,viewportMargin:Infinity,styleActiveLine:true,
+        extraKeys:{Tab:c=>c.somethingSelected()?c.indentSelection('add'):c.replaceSelection('    ','end'),'Shift-Tab':'indentLess','Ctrl-Enter':()=>arRun(),'Cmd-Enter':()=>arRun()}});
+      let mark=null;const clr=()=>{if(mark!==null){cm.removeLineClass(mark,'background','err-line');mark=null}};
+      cm.on('change',()=>{clr();arQueue()});
+      return {get:()=>cm.getValue(),set:v=>{cm.setValue(v);cm.clearHistory();clr()},mark:n=>{clr();if(n>0&&n<=cm.lineCount()){mark=n-1;cm.addLineClass(mark,'background','err-line')}},clear:clr,refresh:()=>cm.refresh(),focus:()=>cm.focus()}}
+    ta.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();ta.setRangeText('    ',ta.selectionStart,ta.selectionEnd,'end');arQueue()}if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();arRun()}});
+    ta.addEventListener('input',arQueue);
+    return {get:()=>ta.value,set:v=>{ta.value=v},mark:()=>{},clear:()=>{},refresh:()=>{},focus:()=>ta.focus()}})();
+  ed2.set('# 綜合練習場\n# 從左邊挑一題按「開始」，或在這裡自由寫寫看\nprint("出發吧，冒險家！")\n');
+  function arQueue(){clearTimeout(arSaveT);arSaveT=setTimeout(arSave,400)}
+  function arSave(){clearTimeout(arSaveT);if(!curP)return;arCodes[curP.id]={code:ed2.get(),stdin:stdinA.value};store.set(AR_CODE,arCodes)}
+  stdinA.addEventListener('input',arQueue);
+  /* 狀態燈跟主工作台同步 */
+  const st0=$id('pyStat'),st1=$id('arStat');const sync=()=>{st1.className=st0.className;st1.querySelector('span').textContent=st0.querySelector('span').textContent};
+  new MutationObserver(sync).observe(st0,{subtree:true,childList:true,characterData:true,attributes:true});sync();
+  st1.addEventListener('click',()=>st0.click());
+  const isleIdx=name=>S.findIndex(s=>s.name===name);
+  function paint(){const n=ARENA.filter(p=>arDone[p.id]).length;$id('arDone').textContent=n;$id('arTotal').textContent=ARENA.length;$id('arBar').style.width=n/ARENA.length*100+'%';
+    $id('arChips').innerHTML=['全部',...groups].map(g=>{const list=g==='全部'?ARENA:ARENA.filter(p=>p.g===g),d=list.filter(p=>arDone[p.id]).length;
+      return `<button type="button" role="tab" data-g="${g}" aria-selected="${g===filt}">${g}<small>${d}/${list.length}</small></button>`}).join('');
+    $id('arList').innerHTML=ARENA.map((p,k)=>({p,k})).filter(({p})=>filt==='全部'||p.g===filt).map(({p,k})=>{const on=curP&&curP.id===p.id,saved=arCodes[p.id];
+      return `<div class="tk${arDone[p.id]?' pass':''}${on?' on':''}"><b>${k+1}. ${p.t}${arDone[p.id]?' <span class="ok" style="color:var(--ok);font-size:13px">✓ 通過</span>':''}</b>
+       <button class="put" type="button" data-p="${p.id}">${on?'進行中':saved?'繼續':'開始'}</button><small>${p.g} · 對應「${p.isle}」</small></div>`}).join('')}
+  function showCur(){const el=$id('arCur');if(!curP){el.hidden=true;return}const p=curP,k=ARENA.indexOf(p),ex=p.cases[0],ii=isleIdx(p.isle);
+    el.hidden=false;el.innerHTML=`<h3>${k+1}. ${p.t}</h3><p>${p.q}</p>
+     <div class="ar-ex"><div><small>範例輸入</small><pre>${esc(ex.in)||'（不需要輸入）'}</pre></div><div><small>範例輸出</small><pre>${esc(ex.out)}</pre></div></div>
+     <div class="ar-row"><button class="linkbtn" type="button" id="arHintBtn">💡 看提示</button>${ii>=0?`<button class="ar-isle" type="button" data-isle="${ii}">回第 ${ii+1} 島「${p.isle}」複習</button>`:''}</div>
+     <div class="ar-hint" id="arHintTxt" hidden>${esc(p.hint)}</div>`}
+  function clearOut(msg){outEl.innerHTML=msg?`<span class="sys">${esc(msg)}</span>`:'';$id('arHint').hidden=true;$id('arGrade').hidden=true;ed2.clear()}
+  function start(id){arSave();curP=ARENA.find(p=>p.id===id);const c=arCodes[id];
+    ed2.set(c?c.code:curP.starter);stdinA.value=c?c.stdin:curP.cases[0].in;$id('arStdinBox').open=!!stdinA.value;
+    $id('arTaskName').textContent=`${ARENA.indexOf(curP)+1}. ${curP.t}`;$id('arTask').hidden=false;
+    clearOut('寫完先按「執行」自己測，覺得對了再按「提交批改」。');showCur();paint();
+    const wb=$id('arWb');if(matchMedia('(max-width:920px)').matches)wb.scrollIntoView({behavior:'smooth',block:'start'});else $id('arCur').scrollIntoView({behavior:'smooth',block:'nearest'});
+    ed2.focus()}
+  function emit2(k,t){const s=document.createElement('span');if(k!=='out')s.className=k;s.textContent=t;outEl.appendChild(s);outEl.scrollTop=outEl.scrollHeight}
+  function hintBox(r){const h=pyHint(r),b=$id('arHint');if(h){b.innerHTML='<b>中文提示</b>'+esc(h);b.hidden=false}else b.hidden=true}
+  function busy(on){running=on;['arRun','arSubmit','runBtn'].forEach(i=>$id(i).disabled=on);$id('arStop').disabled=!on}
+  async function arRun(){if(running)return;const code=ed2.get();arSave();busy(true);clearOut(PY.ready?'':'Python 還在下載，好了就會自動執行…\n');
+    const r=await pyExec(code,stdinA.value,'run',5000,emit2);
+    if(!PY.ready||outEl.firstChild&&outEl.firstChild.className==='sys'&&r.type!=='NoPython'){const f=outEl.firstChild;if(f&&f.className==='sys')outEl.removeChild(f)}
+    if(r.ok)emit2('done',(outEl.textContent&&!outEl.textContent.endsWith('\n')?'\n':'')+'✓ 執行完畢\n');
+    else{const L=code.split('\n'),ln=r.line&&L[r.line-1]!==undefined?L[r.line-1]:null;let t;
+      if(r.type==='Timeout')t='\n⏱ 超過 5 秒，程式被停下來了。';else if(r.type==='Stopped')t='\n■ 已停止。';else if(r.type==='NoPython')t='Python 還沒有載入成功。';else if(r.type==='Busy')t='上面的島嶼工作台正在執行，等它跑完再試一次。';
+      else if(r.type==='RuntimeError'&&r.msg==='OUTPUT_LIMIT')t='\n輸出太多，程式被停下來了。';else t=`\n${ln!==null?`第 ${r.line} 行出錯：\n    ${ln.trim()}\n`:''}${r.type}: ${r.msg}`;
+      emit2(r.type==='Stopped'?'sys':'err',t+'\n');if(r.line)ed2.mark(r.line);hintBox(r)}
+    busy(false)}
+  async function arGrade(){if(!curP||running)return;const p=curP,code=ed2.get();arSave();busy(true);$id('arSubmit').textContent='批改中…';clearOut('');
+    const g=$id('arGrade');g.hidden=false;g.innerHTML='<span class="sys">批改中…</span>';const res=[];
+    for(const c of p.cases){const r=await pyExec(code,c.in||'','judge',3000);res.push({c,r,ok:r.ok&&sameOut(r.out,c.out)});if(['Timeout','NoPython','Stopped','Busy'].includes(r.type))break}
+    const allOk=res.length===p.cases.length&&res.every(x=>x.ok),hid=p.cases.length>1?p.cases.length-1:-1,show=s=>esc(s===''?'（沒有輸出）':s.replace(/\n+$/,''));
+    g.innerHTML=`<div class="gsum ${allOk?'ok':'no'}">${allOk?'全部通過！太厲害了 🎉':`通過 ${res.filter(x=>x.ok).length} / ${p.cases.length} 組測資`}</div>`+res.map((x,k)=>{const r=x.r,err=r.ok?'':(r.type==='Timeout'?'超過 3 秒（可能是無窮迴圈）':`${r.type}: ${r.msg||''}${r.line?`（第 ${r.line} 行）`:''}`);
+      if(k===hid)return `<div class="gcase ${x.ok?'ok':'no'}"><span class="gt">${x.ok?'✓':'✗'} 隱藏測資</span>${x.ok?'':`<span>${err?esc(err):'答案不對。想想看有沒有沒考慮到的情況，例如 0、負數、只有一個數字或比較大的數字。'}</span>`}</div>`;
+      return `<div class="gcase ${x.ok?'ok':'no'}"><span class="gt">${x.ok?'✓':'✗'} 測資 ${k+1}</span><div class="gio">${x.c.in?`<div><small>輸入</small><pre>${show(x.c.in)}</pre></div>`:''}<div><small>應該輸出</small><pre>${show(x.c.out)}</pre></div><div><small>你的輸出</small><pre>${r.ok?show(r.out):show(r.out||'')+'\n'+esc(err)}</pre></div></div></div>`}).join('');
+    const fe=res.find(x=>!x.r.ok);if(fe){hintBox(fe.r);if(fe.r.line)ed2.mark(fe.r.line)}
+    if(allOk){const first=!arDone[p.id];arDone[p.id]=true;store.set(AR_KEY,arDone);paint();if(first&&window.__say)window.__say(`綜合練習「${p.t}」通過！`,3)}
+    busy(false);$id('arSubmit').textContent='提交批改';g.scrollIntoView({behavior:'smooth',block:'nearest'})}
+  $id('arChips').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(b){filt=b.dataset.g;paint()}});
+  $id('arList').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)start(b.dataset.p)});
+  $id('arCur').addEventListener('click',e=>{if(e.target.id==='arHintBtn'){const h=$id('arHintTxt');h.hidden=!h.hidden;return}const b=e.target.closest('[data-isle]');if(b)goStation(+b.dataset.isle)});
+  $id('arRun').addEventListener('click',arRun);$id('arSubmit').addEventListener('click',arGrade);
+  $id('arStop').addEventListener('click',()=>{if(PY.job)pyKill({ok:false,type:'Stopped'})});
+  $id('arCopy').addEventListener('click',e=>copyText(ed2.get(),e.currentTarget));
+  let arm=0;$id('arReset').addEventListener('click',e=>{const b=e.currentTarget;if(!curP)return;
+    if(Date.now()-arm>2500){arm=Date.now();b.textContent='再按一次確認';setTimeout(()=>b.textContent='重設',2500);return}
+    arm=0;b.textContent='重設';ed2.set(curP.starter);stdinA.value=curP.cases[0].in;delete arCodes[curP.id];store.set(AR_CODE,arCodes);clearOut('已重設成題目一開始的程式。')});
+  $id('dkBig').addEventListener('click',()=>requestAnimationFrame(()=>ed2.refresh()));
+  window.addEventListener('beforeunload',arSave);
+  document.fonts&&document.fonts.ready.then(()=>ed2.refresh());
+  paint()})();
+
 buildMap();
 map3d=init3D();
 if(!map3d){$id('map3d').hidden=true;$id('map2d').hidden=false;$id('pageTitle').classList.remove('sr-only')}
